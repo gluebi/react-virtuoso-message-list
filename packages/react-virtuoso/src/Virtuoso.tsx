@@ -6,7 +6,7 @@ import useIsomorphicLayoutEffect from './hooks/useIsomorphicLayoutEffect'
 import useScrollTop from './hooks/useScrollTop'
 import useSize from './hooks/useSize'
 import useWindowViewportRectRef from './hooks/useWindowViewportRect'
-import { Components, ComputeItemKey, ContextProp, GroupContent, GroupItemContent, ItemContent, ListRootProps } from './interfaces'
+import { Components, ComputeItemKey, ContextProp, GroupContent, GroupItemContent, ItemContent, ListRootProps, SizeFunction } from './interfaces'
 import { listSystem } from './listSystem'
 import { systemToComponent } from './react-urx'
 import * as u from './urx'
@@ -70,23 +70,23 @@ const ITEM_STYLE = { overflowAnchor: 'none' } as const
 const HORIZONTAL_ITEM_STYLE = { ...ITEM_STYLE, display: 'inline-block', height: '100%' } as const
 
 const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = false }: { showTopList?: boolean }) {
-  const listState = useEmitterValue('listState')
+  const listState = useEmitterValue('listState') as import('./listStateSystem').ListState
 
   const sizeRanges = usePublisher('sizeRanges')
-  const useWindowScroll = useEmitterValue('useWindowScroll')
-  const customScrollParent = useEmitterValue('customScrollParent')
+  const useWindowScroll = useEmitterValue('useWindowScroll') as boolean
+  const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
   const windowScrollContainerStateCallback = usePublisher('windowScrollContainerState')
   const _scrollContainerStateCallback = usePublisher('scrollContainerState')
   const scrollContainerStateCallback =
     customScrollParent || useWindowScroll ? windowScrollContainerStateCallback : _scrollContainerStateCallback
-  const itemContent = useEmitterValue('itemContent')
-  const context = useEmitterValue('context')
-  const groupContent = useEmitterValue('groupContent')
-  const trackItemSizes = useEmitterValue('trackItemSizes')
-  const itemSize = useEmitterValue('itemSize')
-  const log = useEmitterValue('log')
+  const itemContent = useEmitterValue('itemContent') as ItemContent<any, any> | GroupItemContent<any, any>
+  const context = useEmitterValue('context') as any
+  const groupContent = useEmitterValue('groupContent') as GroupContent<any>
+  const trackItemSizes = useEmitterValue('trackItemSizes') as boolean
+  const itemSize = useEmitterValue('itemSize') as SizeFunction
+  const log = useEmitterValue('log') as import('./loggerSystem').Log
   const listGap = usePublisher('gap')
-  const horizontalDirection = useEmitterValue('horizontalDirection')
+  const horizontalDirection = useEmitterValue('horizontalDirection') as boolean
 
   const { callbackRef } = useChangedListContentsSizes(
     sizeRanges,
@@ -97,27 +97,27 @@ const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = fa
     listGap,
     customScrollParent,
     horizontalDirection,
-    useEmitterValue('skipAnimationFrameInResizeObserver')
+    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
   )
 
   const [deviation, setDeviation] = React.useState(0)
-  useEmitter('deviation', (value) => {
+  useEmitter('deviation', (value: number) => {
     if (deviation !== value) {
       // ref.current!.style.marginTop = `${value}px`
       setDeviation(value)
     }
   })
 
-  const EmptyPlaceholder = useEmitterValue('EmptyPlaceholder')
-  const ScrollSeekPlaceholder = useEmitterValue('ScrollSeekPlaceholder') || DefaultScrollSeekPlaceholder
-  const ListComponent = useEmitterValue('ListComponent')!
-  const ItemComponent = useEmitterValue('ItemComponent')!
-  const GroupComponent = useEmitterValue('GroupComponent')!
-  const computeItemKey = useEmitterValue('computeItemKey')
-  const isSeeking = useEmitterValue('isSeeking')
-  const hasGroups = useEmitterValue('groupIndices').length > 0
-  const alignToBottom = useEmitterValue('alignToBottom')
-  const initialItemFinalLocationReached = useEmitterValue('initialItemFinalLocationReached')
+  const EmptyPlaceholder = useEmitterValue('EmptyPlaceholder') as React.ComponentType<ContextProp<any>> | undefined
+  const ScrollSeekPlaceholder = (useEmitterValue('ScrollSeekPlaceholder') as React.ComponentType<import('./interfaces').ScrollSeekPlaceholderProps & ContextProp<any>> | undefined) || DefaultScrollSeekPlaceholder
+  const ListComponent = useEmitterValue('ListComponent') as React.ElementType
+  const ItemComponent = useEmitterValue('ItemComponent') as React.ElementType
+  const GroupComponent = useEmitterValue('GroupComponent') as React.ElementType
+  const computeItemKey = useEmitterValue('computeItemKey') as ComputeItemKey<any, any>
+  const isSeeking = useEmitterValue('isSeeking') as boolean
+  const hasGroups = (useEmitterValue('groupIndices') as number[]).length > 0
+  const alignToBottom = useEmitterValue('alignToBottom') as boolean
+  const initialItemFinalLocationReached = useEmitterValue('initialItemFinalLocationReached') as boolean
 
   const containerStyle: React.CSSProperties = showTopList
     ? {}
@@ -246,7 +246,7 @@ export function itemPropIfNotDomElement(element: unknown, item: unknown) {
 }
 
 const Header: React.FC = /*#__PURE__*/ React.memo(function VirtuosoHeader() {
-  const Header = useEmitterValue('HeaderComponent')
+  const Header = useEmitterValue('HeaderComponent') as React.ComponentType<ContextProp<any>> | undefined
   const headerHeight = usePublisher('headerHeight')
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-unsafe-assignment
   const HeaderFooterTag = useEmitterValue('HeaderFooterTag') as any
@@ -258,9 +258,9 @@ const Header: React.FC = /*#__PURE__*/ React.memo(function VirtuosoHeader() {
       [headerHeight]
     ),
     true,
-    useEmitterValue('skipAnimationFrameInResizeObserver')
+    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
   )
-  const context = useEmitterValue('context')
+  const context = useEmitterValue('context') as any
   return Header ? (
     <HeaderFooterTag ref={ref}>
       <Header {...contextPropIfNotDomElement(Header, context)} />
@@ -269,7 +269,7 @@ const Header: React.FC = /*#__PURE__*/ React.memo(function VirtuosoHeader() {
 })
 
 const Footer: React.FC = /*#__PURE__*/ React.memo(function VirtuosoFooter() {
-  const Footer = useEmitterValue('FooterComponent')
+  const Footer = useEmitterValue('FooterComponent') as React.ComponentType<ContextProp<any>> | undefined
   const footerHeight = usePublisher('footerHeight')
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-unsafe-assignment
   const HeaderFooterTag = useEmitterValue('HeaderFooterTag') as any
@@ -281,9 +281,9 @@ const Footer: React.FC = /*#__PURE__*/ React.memo(function VirtuosoFooter() {
       [footerHeight]
     ),
     true,
-    useEmitterValue('skipAnimationFrameInResizeObserver')
+    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
   )
-  const context = useEmitterValue('context')
+  const context = useEmitterValue('context') as any
   return Footer ? (
     <HeaderFooterTag ref={ref}>
       <Footer {...contextPropIfNotDomElement(Footer, context)} />
@@ -300,10 +300,10 @@ interface Hooks {
 export function buildScroller({ useEmitter, useEmitterValue, usePublisher }: Hooks) {
   const Scroller: Components['Scroller'] = React.memo(function VirtuosoScroller({ children, style, context, ...props }) {
     const scrollContainerStateCallback = usePublisher('scrollContainerState')
-    const ScrollerComponent = useEmitterValue('ScrollerComponent')!
+    const ScrollerComponent = useEmitterValue('ScrollerComponent') as React.ElementType
     const smoothScrollTargetReached = usePublisher('smoothScrollTargetReached')
-    const scrollerRefCallback = useEmitterValue('scrollerRef')
-    const horizontalDirection = useEmitterValue('horizontalDirection') || false
+    const scrollerRefCallback = useEmitterValue('scrollerRef') as (ref: HTMLElement | null | Window) => void
+    const horizontalDirection = (useEmitterValue('horizontalDirection') as boolean) || false
 
     const { scrollByCallback, scrollerRef, scrollToCallback } = useScrollTop(
       scrollContainerStateCallback,
@@ -337,13 +337,13 @@ export function buildScroller({ useEmitter, useEmitterValue, usePublisher }: Hoo
 export function buildWindowScroller({ useEmitter, useEmitterValue, usePublisher }: Hooks) {
   const Scroller: Components['Scroller'] = React.memo(function VirtuosoWindowScroller({ children, style, context, ...props }) {
     const scrollContainerStateCallback = usePublisher('windowScrollContainerState')
-    const ScrollerComponent = useEmitterValue('ScrollerComponent')!
+    const ScrollerComponent = useEmitterValue('ScrollerComponent') as React.ElementType
     const smoothScrollTargetReached = usePublisher('smoothScrollTargetReached')
-    const totalListHeight = useEmitterValue('totalListHeight')
-    const deviation = useEmitterValue('deviation')
-    const customScrollParent = useEmitterValue('customScrollParent')
+    const totalListHeight = useEmitterValue('totalListHeight') as number
+    const deviation = useEmitterValue('deviation') as number
+    const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
     const scrollerElRef = React.useRef<HTMLDivElement | null>(null)
-    const scrollerRefCallback = useEmitterValue('scrollerRef')
+    const scrollerRefCallback = useEmitterValue('scrollerRef') as (ref: HTMLElement | null | Window) => void
     const { scrollByCallback, scrollerRef, scrollToCallback } = useScrollTop(
       scrollContainerStateCallback,
       smoothScrollTargetReached,
@@ -380,14 +380,14 @@ const Viewport: React.FC<React.PropsWithChildren> = ({ children }) => {
   const ctx = React.useContext(VirtuosoMockContext)
   const viewportHeight = usePublisher('viewportHeight')
   const fixedItemHeight = usePublisher('fixedItemHeight')
-  const alignToBottom = useEmitterValue('alignToBottom')
+  const alignToBottom = useEmitterValue('alignToBottom') as boolean
 
-  const horizontalDirection = useEmitterValue('horizontalDirection')
+  const horizontalDirection = useEmitterValue('horizontalDirection') as boolean
   const viewportSizeCallbackMemo = React.useMemo(
     () => u.compose(viewportHeight, (el: HTMLElement) => correctItemSize(el, horizontalDirection ? 'width' : 'height')),
     [viewportHeight, horizontalDirection]
   )
-  const viewportRef = useSize(viewportSizeCallbackMemo, true, useEmitterValue('skipAnimationFrameInResizeObserver'))
+  const viewportRef = useSize(viewportSizeCallbackMemo, true, useEmitterValue('skipAnimationFrameInResizeObserver') as boolean)
 
   React.useEffect(() => {
     if (ctx) {
@@ -407,13 +407,13 @@ const WindowViewport: React.FC<React.PropsWithChildren> = ({ children }) => {
   const ctx = React.useContext(VirtuosoMockContext)
   const windowViewportRect = usePublisher('windowViewportRect')
   const fixedItemHeight = usePublisher('fixedItemHeight')
-  const customScrollParent = useEmitterValue('customScrollParent')
+  const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
   const viewportRef = useWindowViewportRectRef(
     windowViewportRect,
     customScrollParent,
-    useEmitterValue('skipAnimationFrameInResizeObserver')
+    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
   )
-  const alignToBottom = useEmitterValue('alignToBottom')
+  const alignToBottom = useEmitterValue('alignToBottom') as boolean
 
   React.useEffect(() => {
     if (ctx) {
@@ -430,10 +430,10 @@ const WindowViewport: React.FC<React.PropsWithChildren> = ({ children }) => {
 }
 
 const TopItemListContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const TopItemList = useEmitterValue('TopItemListComponent') || 'div'
-  const headerHeight = useEmitterValue('headerHeight')
+  const TopItemList = (useEmitterValue('TopItemListComponent') as React.ElementType | undefined) || 'div'
+  const headerHeight = useEmitterValue('headerHeight') as number
   const style = { ...topItemListStyle, marginTop: `${headerHeight}px` }
-  const context = useEmitterValue('context')
+  const context = useEmitterValue('context') as any
   return (
     <TopItemList style={style} {...contextPropIfNotDomElement(TopItemList, context)}>
       {children}
@@ -442,10 +442,10 @@ const TopItemListContainer: React.FC<React.PropsWithChildren> = ({ children }) =
 }
 
 const ListRoot: React.FC<ListRootProps> = /*#__PURE__*/ React.memo(function VirtuosoRoot(props) {
-  const useWindowScroll = useEmitterValue('useWindowScroll')
-  const showTopList = useEmitterValue('topItemsIndexes').length > 0
-  const customScrollParent = useEmitterValue('customScrollParent')
-  const context = useEmitterValue('context')
+  const useWindowScroll = useEmitterValue('useWindowScroll') as boolean
+  const showTopList = (useEmitterValue('topItemsIndexes') as number[]).length > 0
+  const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
+  const context = useEmitterValue('context') as any
   const TheScroller = customScrollParent || useWindowScroll ? WindowScroller : Scroller
   const TheViewport = customScrollParent || useWindowScroll ? WindowViewport : Viewport
   return (
@@ -500,6 +500,8 @@ export const {
       scrollSeekConfiguration: 'scrollSeekConfiguration',
       headerFooterTag: 'HeaderFooterTag',
       data: 'data',
+      dataWithScrollModifier: 'dataWithScrollModifier',
+      itemIdentity: 'itemIdentity',
       initialItemCount: 'initialItemCount',
       initialScrollTop: 'initialScrollTop',
       alignToBottom: 'alignToBottom',

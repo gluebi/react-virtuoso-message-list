@@ -1,6 +1,7 @@
 import type {
   Components,
   ComputeItemKey,
+  DataWithScrollModifier,
   FlatIndexLocationWithAlign,
   FlatScrollIntoViewLocation,
   FollowOutput,
@@ -210,6 +211,38 @@ export interface VirtuosoProps<Data, Context> extends ListRootProps {
    * The data items to be rendered. If data is set, the total count will be inferred from the length of the array.
    */
   data?: readonly Data[]
+
+  /**
+   * Alternative to `data` prop that supports scroll modifiers for advanced scroll position management.
+   * When provided, this takes precedence over the `data` prop.
+   * Use this when you need to prepend items, remove items, or control scroll behavior during data changes.
+   *
+   * @example
+   * ```tsx
+   * <Virtuoso
+   *   dataWithScrollModifier={{
+   *     data: items,
+   *     scrollModifier: 'prepend'
+   *   }}
+   *   itemIdentity={(item) => item.id}
+   * />
+   * ```
+   */
+  dataWithScrollModifier?: DataWithScrollModifier<Data>
+
+  /**
+   * Function to compute a unique identity for each item. Used by scroll modifiers to detect data changes.
+   * Defaults to using the item itself as the identity.
+   *
+   * @example
+   * ```tsx
+   * <Virtuoso
+   *   data={items}
+   *   itemIdentity={(item) => item.id}
+   * />
+   * ```
+   */
+  itemIdentity?: (item: Data) => unknown
 
   /**
    * By default, the component assumes the default item height from the first rendered item (rendering it as a "probe").

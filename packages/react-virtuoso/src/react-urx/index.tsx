@@ -182,7 +182,10 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
     for (const optionalPropName of optionalPropNames) {
       if (optionalPropName in props) {
         const stream = system[map.optional![optionalPropName]]
-        u.publish(stream, props[optionalPropName])
+        // Safety check: ensure stream is a function before publishing
+        if (stream && typeof stream === 'function') {
+          u.publish(stream, props[optionalPropName])
+        }
       }
     }
 
@@ -271,17 +274,32 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
     const system = React.useContext(Context)
     const source: StatefulStream<V> = system[key]
 
+    // Safety check: ensure source is a function before using it
+    const getValueSafe = () => {
+      if (source && typeof source === 'function') {
+        try {
+          return u.getValue(source)
+        } catch {
+          return undefined as V
+        }
+      }
+      return undefined as V
+    }
+
     const cb = React.useCallback(
       (c: () => void) => {
-        return u.subscribe(source, c)
+        if (source && typeof source === 'function') {
+          return u.subscribe(source, c)
+        }
+        return () => {}
       },
       [source]
     )
 
     return React.useSyncExternalStore(
       cb,
-      () => u.getValue(source),
-      () => u.getValue(source)
+      getValueSafe,
+      getValueSafe
     )
   }
 
@@ -289,17 +307,31 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
     const system = React.useContext(Context)
     const source: StatefulStream<V> = system[key]
 
-    const [value, setValue] = React.useState(u.curry1to0(u.getValue, source))
+    // Safety check: ensure source is a function before using it
+    const getInitialValue = () => {
+      if (source && typeof source === 'function') {
+        try {
+          return u.getValue(source)
+        } catch {
+          // Fallback to undefined if getValue fails
+          return undefined as V
+        }
+      }
+      return undefined as V
+    }
 
-    useIsomorphicLayoutEffect(
-      () =>
-        u.subscribe(source, (next: V) => {
+    const [value, setValue] = React.useState(getInitialValue)
+
+    useIsomorphicLayoutEffect(() => {
+      if (source && typeof source === 'function') {
+        return u.subscribe(source, (next: V) => {
           if (next !== value) {
             setValue(u.always(next))
           }
-        }),
-      [source, value]
-    )
+        })
+      }
+      return () => {}
+    }, [source, value])
 
     return value
   }
@@ -309,7 +341,12 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
   const useEmitter = <K extends keyof S, V = S[K] extends Stream<infer R> ? R : never>(key: K, callback: (value: V) => void) => {
     const context = React.useContext(Context)
     const source: Stream<V> = context[key]
-    useIsomorphicLayoutEffect(() => u.subscribe(source, callback), [callback, source])
+    useIsomorphicLayoutEffect(() => {
+      if (source && typeof source === 'function') {
+        return u.subscribe(source, callback)
+      }
+      return () => {}
+    }, [callback, source])
   }
 
   return {
