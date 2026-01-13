@@ -35,7 +35,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run CI checks
-        run: pnpm run ci
+        run: pnpm --filter @gluebi/react-virtuoso typecheck && pnpm --filter @gluebi/react-virtuoso lint && pnpm --filter @gluebi/react-virtuoso test && pnpm --filter @gluebi/react-virtuoso build
 
       - name: Configure npm for GitHub Package Registry
         run: |
@@ -46,7 +46,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm release
+          publish: pnpm --filter @gluebi/react-virtuoso publish --no-git-checks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
