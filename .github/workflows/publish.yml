@@ -37,11 +37,6 @@ jobs:
       - name: Run CI checks
         run: pnpm --filter @gluebi/react-virtuoso typecheck && pnpm --filter @gluebi/react-virtuoso lint && pnpm --filter @gluebi/react-virtuoso test && pnpm --filter @gluebi/react-virtuoso build
 
-      - name: Configure npm for GitHub Package Registry
-        run: |
-          echo "@gluebi:registry=https://npm.pkg.github.com" >> .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
-
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
@@ -50,6 +45,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure npm for GitHub Package Registry
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          echo "@gluebi:registry=https://npm.pkg.github.com" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
 
       - name: Upload Playwright report
         if: failure()
