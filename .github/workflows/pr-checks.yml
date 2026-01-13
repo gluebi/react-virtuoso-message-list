@@ -83,7 +83,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm --filter '!@virtuoso.dev/virtuoso.dev' build
+        run: pnpm build
 
       - name: Install Playwright browsers for gurx
         run: pnpm --filter @virtuoso.dev/gurx exec playwright install --with-deps chromium
@@ -112,7 +112,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm --filter '!@virtuoso.dev/virtuoso.dev' build
+        run: pnpm build
 
   e2e:
     name: E2E Tests
