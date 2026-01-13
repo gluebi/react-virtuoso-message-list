@@ -41,6 +41,9 @@ jobs:
         run: |
           echo "@gluebi:registry=https://npm.pkg.github.com" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> .npmrc
+          # Also create .npmrc in package directory for publish command
+          mkdir -p packages/react-virtuoso
+          cp .npmrc packages/react-virtuoso/.npmrc
 
       - name: Create Release Pull Request or Publish
         id: changesets
