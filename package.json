@@ -15,7 +15,7 @@
     "build": "pnpm --if-present --recursive run build",
     "release": "pnpm build && pnpm publish -r",
     "changeset-add": "pnpm changeset add",
-    "publish:gluebi": "pnpm changeset publish && pnpm --filter @gluebi/react-virtuoso publish --no-git-checks --registry https://npm.pkg.github.com",
+    "publish:gluebi": "pnpm --filter @gluebi/react-virtuoso publish --no-git-checks --registry https://npm.pkg.github.com",
     "dev:docs": "pnpm --filter @virtuoso.dev/virtuoso.dev run dev",
     "build-virtuoso.dev": "pnpm --filter @virtuoso.dev/virtuoso.dev run build",
     "prepare": "lefthook install",
