@@ -83,10 +83,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: pnpm --filter @gluebi/react-virtuoso build
 
-      - name: Install Playwright browsers for gurx
-        run: pnpm --filter @virtuoso.dev/gurx exec playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: pnpm --filter @gluebi/react-virtuoso exec playwright install --with-deps chromium
 
       - name: Run tests
         run: pnpm --filter @gluebi/react-virtuoso test
@@ -135,7 +135,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: pnpm --filter react-virtuoso exec playwright install --with-deps chromium
+        run: pnpm --filter @gluebi/react-virtuoso exec playwright install --with-deps chromium
 
       - name: Run E2E tests
         run: pnpm --filter @gluebi/react-virtuoso e2e
