@@ -244,7 +244,7 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
     return (
       <Context.Provider value={system}>
         {Root ? (
-          <RootComponent {...omit([...requiredPropNames, ...optionalPropNames, ...eventNames], props)}>{children}</RootComponent>
+          <RootComponent {...omit([...requiredPropNames, ...optionalPropNames, ...eventNames, ...methodNames], props)}>{children}</RootComponent>
         ) : (
           children
         )}

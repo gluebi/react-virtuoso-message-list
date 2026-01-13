@@ -1,5 +1,6 @@
 {
-  "name": "react-virtuoso",
+  "name": "@gluebi/react-virtuoso",
+  "type": "commonjs",
   "description": "A virtual scroll React component for efficiently rendering large scrollable lists, grids, tables, and feeds",
   "author": "Petyo Ivanov",
   "sideEffects": false,
@@ -8,8 +9,19 @@
   "license": "MIT",
   "source": "src/index.tsx",
   "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
   "keywords": [
     "react",
     "reactjs",
@@ -33,11 +45,12 @@
     "directory": "packages/react-virtuoso"
   },
   "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
     "provenance": true
   },
   "scripts": {
     "dev": "vite build",
-    "build": "vite build",
+    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.d.ts', 'dist/index.d.mts')\"",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "e2e": "playwright test --workers=1",

@@ -10,29 +10,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-markdown:
-    name: Lint Markdown
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.24.0
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22.x
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint markdown
-        run: pnpm lint:md
-
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
@@ -54,7 +31,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build prerequisites
-        run: pnpm --filter '!@virtuoso.dev/virtuoso.dev' build
+        run: pnpm build
 
       - name: Type check
         run: pnpm typecheck
@@ -80,9 +57,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build prerequisites
-        run: |
-          pnpm --filter '!@virtuoso.dev/virtuoso.dev' build
-          pnpm --filter @virtuoso.dev/virtuoso.dev astro sync
+        run: pnpm build
 
       - name: Lint
         run: pnpm lint
@@ -137,12 +112,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
-        env:
-          PADDLE_ENVIRONMENT: sandbox
-          PADDLE_TOKEN: test_5
-          PADDLE_STANDARD_PRICE_ID: pri_01
-          PADDLE_PRO_PRICE_ID: pri_01
+        run: pnpm --filter '!@virtuoso.dev/virtuoso.dev' build
 
   e2e:
     name: E2E Tests

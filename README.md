@@ -74,6 +74,51 @@ You can customize the markup up to your requirements - check [the Material UI li
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing guidelines, and pull request process.
 
+## Publishing
+
+This fork publishes to GitHub Package Registry instead of npm.
+
+### For Maintainers
+
+To publish a new version:
+
+1. Create a changeset describing your changes:
+   ```bash
+   pnpm changeset-add
+   ```
+   Follow the prompts to select the package, choose version bump type (major/minor/patch), and write a description.
+
+2. Commit and push the changeset file to the `master` branch.
+
+3. The automated workflow will:
+   - Create a pull request with version bumps and changelog updates
+   - When the PR is merged, automatically publish to GitHub Package Registry
+
+### For Users
+
+Install the package from GitHub Package Registry:
+
+```bash
+npm install @gluebi/react-virtuoso
+```
+
+**Note:** You need to configure npm to authenticate with GitHub Package Registry. Create or update your `~/.npmrc` file:
+
+```
+@gluebi:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+```
+
+To get a GitHub token:
+1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate a new token with `read:packages` permission
+3. Use this token in your `.npmrc` file
+
+Alternatively, you can authenticate using npm:
+```bash
+npm login --scope=@gluebi --registry=https://npm.pkg.github.com
+```
+
 ## Sponsors
 
 If you find Virtuoso valuable for your work, please consider [sponsoring the project](https://github.com/sponsors/petyosi). Your support helps ensure continued development and maintenance.
