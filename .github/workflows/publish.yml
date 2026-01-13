@@ -46,9 +46,10 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm --filter @gluebi/react-virtuoso publish --no-git-checks
+          publish: pnpm changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Playwright report
         if: failure()
