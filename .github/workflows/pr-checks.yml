@@ -31,10 +31,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build prerequisites
-        run: pnpm build
+        run: pnpm --filter @gluebi/react-virtuoso build
 
       - name: Type check
-        run: pnpm --filter react-virtuoso --filter @virtuoso.dev/gurx --filter @virtuoso.dev/masonry typecheck
+        run: pnpm --filter @gluebi/react-virtuoso typecheck
 
   lint:
     name: Lint Code
@@ -57,10 +57,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build prerequisites
-        run: pnpm build
+        run: pnpm --filter @gluebi/react-virtuoso build
 
       - name: Lint
-        run: pnpm --filter react-virtuoso --filter @virtuoso.dev/gurx --filter @virtuoso.dev/masonry lint
+        run: pnpm --filter @gluebi/react-virtuoso lint
 
   test:
     name: Test
@@ -89,7 +89,7 @@ jobs:
         run: pnpm --filter @virtuoso.dev/gurx exec playwright install --with-deps chromium
 
       - name: Run tests
-        run: pnpm test
+        run: pnpm --filter @gluebi/react-virtuoso test
 
   build:
     name: Build
@@ -138,7 +138,7 @@ jobs:
         run: pnpm --filter react-virtuoso exec playwright install --with-deps chromium
 
       - name: Run E2E tests
-        run: pnpm e2e
+        run: pnpm --filter @gluebi/react-virtuoso e2e
 
       - name: Upload Playwright report
         if: failure()
