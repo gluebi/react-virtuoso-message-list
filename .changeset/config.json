@@ -7,5 +7,16 @@
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "ignore": ["@virtuoso.dev/*", "@gluebi/react-virtuoso-message-list"]
+  "ignore": [
+    "@virtuoso.dev/gurx",
+    "@virtuoso.dev/masonry",
+    "@virtuoso.dev/reactive-engine-core",
+    "@virtuoso.dev/reactive-engine-examples",
+    "@virtuoso.dev/reactive-engine-query",
+    "@virtuoso.dev/reactive-engine-react",
+    "@virtuoso.dev/reactive-engine-router",
+    "@virtuoso.dev/reactive-engine-storage",
+    "@virtuoso.dev/tooling",
+    "@virtuoso.dev/virtuoso.dev"
+  ]
 }
