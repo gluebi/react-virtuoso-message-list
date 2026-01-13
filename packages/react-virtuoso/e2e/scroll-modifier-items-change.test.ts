@@ -67,7 +67,7 @@ test.describe('scroll modifier items-change', () => {
   test('filters items correctly', async ({ page }) => {
     // Wait for items to render
     await page.waitForTimeout(400)
-    
+
     // Get initial scroll height (proportional to total item count)
     const initialScrollHeight = await getScrollHeight(page)
     expect(initialScrollHeight).toBeGreaterThan(0)
@@ -80,7 +80,7 @@ test.describe('scroll modifier items-change', () => {
 
     // Get scroll height after filtering (should be less since we have fewer items)
     const filteredScrollHeight = await getScrollHeight(page)
-    
+
     // Should have fewer items (only active ones), so scroll height should be less
     expect(filteredScrollHeight).toBeLessThan(initialScrollHeight)
 
@@ -90,7 +90,7 @@ test.describe('scroll modifier items-change', () => {
       if (!listContainer) return []
       return Array.from(listContainer.children).map((child) => child.textContent || '')
     })
-    
+
     // All visible items should be active
     itemTexts.forEach((text) => {
       expect(text).toContain('active')
@@ -100,13 +100,13 @@ test.describe('scroll modifier items-change', () => {
   test('resets items correctly', async ({ page }) => {
     // Wait for items to render
     await page.waitForTimeout(400)
-    
+
     // Filter to active items
     const filterButton = page.locator('button:has-text("Show Active Only")')
     await filterButton.waitFor({ timeout: 5000 })
     await filterButton.click()
     await page.waitForTimeout(800) // Wait for filter to apply
-    
+
     const filteredScrollHeight = await getScrollHeight(page)
 
     // Reset

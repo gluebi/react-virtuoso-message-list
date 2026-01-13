@@ -68,9 +68,9 @@ const featureGroup1System = u.system(
 export const listSystem = u.system(
   (deps) => {
     // Workaround for TypeScript inference issue with complex system tuples
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const depsTyped = deps as any
-    
+
     // Create fallback streams for scroll modifier system in case it's not properly initialized
     const fallbackDataWithScrollModifier = u.statefulStream<import('./interfaces').DataWithScrollModifier<unknown> | null | undefined>(null)
     const fallbackItemIdentity = u.statefulStream<(item: unknown) => unknown>((item) => item)
@@ -111,12 +111,12 @@ export const listSystem = u.system(
       featureGroup1,
     ] = depsTyped
     const { listState, minOverscanItemCount, topItemsIndexes, rangeChanged, atBottomState, ...flags } = listStateSystemOutput
-    
+
     // Runtime safety checks for systems that might not be properly typed
     if (featureGroup1 && 'scrollSeekRangeChanged' in featureGroup1 && typeof featureGroup1.scrollSeekRangeChanged === 'function') {
       u.connect(rangeChanged, featureGroup1.scrollSeekRangeChanged)
     }
-    
+
     if (
       featureGroup1 &&
       'windowViewportRect' in featureGroup1 &&
@@ -199,7 +199,7 @@ export const listSystem = u.system(
           ) {
             return scrollModifier.dataWithScrollModifier
           }
-        } catch (error) {
+        } catch {
           // Fall through to fallback
         }
         return fallbackDataWithScrollModifier

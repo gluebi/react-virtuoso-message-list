@@ -11,13 +11,11 @@ import useSize from './hooks/useSize'
 import useWindowViewportRectRef from './hooks/useWindowViewportRect'
 import {
   ComputeItemKey,
-  ContextProp,
   FixedFooterContent,
   FixedHeaderContent,
   GroupContent,
   GroupItemContent,
   ItemContent,
-  SizeFunction,
   TableComponents,
   TableRootProps,
 } from './interfaces'
@@ -105,20 +103,20 @@ const ITEM_STYLE = { overflowAnchor: 'none' } as const
 const STICKY_ITEM_STYLE = { position: positionStickyCssValue(), zIndex: 2, overflowAnchor: 'none' } as const
 
 const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = false }: { showTopList?: boolean }) {
-  const listState = useEmitterValue('listState') as import('./listStateSystem').ListState
-  const computeItemKey = useEmitterValue('computeItemKey') as ComputeItemKey<any, any>
-  const firstItemIndex = useEmitterValue('firstItemIndex') as number
-  const context = useEmitterValue('context') as any
-  const isSeeking = useEmitterValue('isSeeking') as boolean
-  const fixedHeaderHeight = useEmitterValue('fixedHeaderHeight') as number
-  const hasGroups = (useEmitterValue('groupIndices') as number[]).length > 0
+  const listState = useEmitterValue('listState')
+  const computeItemKey = useEmitterValue('computeItemKey')
+  const firstItemIndex = useEmitterValue('firstItemIndex')
+  const context = useEmitterValue('context')
+  const isSeeking = useEmitterValue('isSeeking')
+  const fixedHeaderHeight = useEmitterValue('fixedHeaderHeight')
+  const hasGroups = useEmitterValue('groupIndices').length > 0
 
-  const itemContent = useEmitterValue('itemContent') as ItemContent<any, any> | GroupItemContent<any, any>
-  const groupContent = useEmitterValue('groupContent') as GroupContent<any>
+  const itemContent = useEmitterValue('itemContent')
+  const groupContent = useEmitterValue('groupContent')
 
-  const ScrollSeekPlaceholder = (useEmitterValue('ScrollSeekPlaceholder') as React.ComponentType<import('./interfaces').ScrollSeekPlaceholderProps & ContextProp<any>> | undefined) || DefaultScrollSeekPlaceholder
-  const GroupComponent = useEmitterValue('GroupComponent') as React.ElementType
-  const TableRowComponent = useEmitterValue('TableRowComponent') as React.ElementType
+  const ScrollSeekPlaceholder = useEmitterValue('ScrollSeekPlaceholder') || DefaultScrollSeekPlaceholder
+  const GroupComponent = useEmitterValue('GroupComponent')
+  const TableRowComponent = useEmitterValue('TableRowComponent')
 
   const topItemOffsets = (showTopList ? listState.topItems : []).reduce<number[]>((acc, item, index) => {
     if (index === 0) {
@@ -174,7 +172,7 @@ const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = fa
         style={showTopList ? { ...STICKY_ITEM_STYLE, top: fixedHeaderHeight + offsetTop } : ITEM_STYLE}
       >
         {hasGroups
-          ? (itemContent as GroupItemContent<any, any>)(item.index, item.groupIndex!, item.data, context)
+          ? (itemContent as GroupItemContent<any, any>)(item.index, item.groupIndex, item.data, context)
           : (itemContent as ItemContent<any, any>)(item.index, item.data, context)}
       </TableRowComponent>
     )
@@ -184,18 +182,18 @@ const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = fa
 })
 
 const TableBody = /*#__PURE__*/ React.memo(function TableVirtuosoBody() {
-  const listState = useEmitterValue('listState') as import('./listStateSystem').ListState
-  const showTopList = (useEmitterValue('topItemsIndexes') as number[]).length > 0
+  const listState = useEmitterValue('listState')
+  const showTopList = useEmitterValue('topItemsIndexes').length > 0
   const sizeRanges = usePublisher('sizeRanges')
-  const useWindowScroll = useEmitterValue('useWindowScroll') as boolean
-  const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
+  const useWindowScroll = useEmitterValue('useWindowScroll')
+  const customScrollParent = useEmitterValue('customScrollParent')
   const windowScrollContainerStateCallback = usePublisher('windowScrollContainerState')
   const _scrollContainerStateCallback = usePublisher('scrollContainerState')
   const scrollContainerStateCallback =
     customScrollParent || useWindowScroll ? windowScrollContainerStateCallback : _scrollContainerStateCallback
-  const trackItemSizes = useEmitterValue('trackItemSizes') as boolean
-  const itemSize = useEmitterValue('itemSize') as SizeFunction
-  const log = useEmitterValue('log') as import('./loggerSystem').Log
+  const trackItemSizes = useEmitterValue('trackItemSizes')
+  const itemSize = useEmitterValue('itemSize')
+  const log = useEmitterValue('log')
 
   const { callbackRef, ref } = useChangedListContentsSizes(
     sizeRanges,
@@ -206,7 +204,7 @@ const TableBody = /*#__PURE__*/ React.memo(function TableVirtuosoBody() {
     undefined,
     customScrollParent,
     false,
-    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
+    useEmitterValue('skipAnimationFrameInResizeObserver')
   )
 
   const [deviation, setDeviation] = React.useState(0)
@@ -216,12 +214,12 @@ const TableBody = /*#__PURE__*/ React.memo(function TableVirtuosoBody() {
       setDeviation(value)
     }
   })
-  const EmptyPlaceholder = useEmitterValue('EmptyPlaceholder') as React.ComponentType<ContextProp<any>> | undefined
-  const FillerRow = (useEmitterValue('FillerRow') as React.ComponentType<import('./interfaces').FillerRowProps & ContextProp<any>> | undefined) || DefaultFillerRow
-  const TableBodyComponent = useEmitterValue('TableBodyComponent') as React.ElementType
-  const paddingTopAddition = useEmitterValue('paddingTopAddition') as number
-  const statefulTotalCount = useEmitterValue('statefulTotalCount') as number
-  const context = useEmitterValue('context') as any
+  const EmptyPlaceholder = useEmitterValue('EmptyPlaceholder')
+  const FillerRow = useEmitterValue('FillerRow') || DefaultFillerRow
+  const TableBodyComponent = useEmitterValue('TableBodyComponent')
+  const paddingTopAddition = useEmitterValue('paddingTopAddition')
+  const statefulTotalCount = useEmitterValue('statefulTotalCount')
+  const context = useEmitterValue('context')
 
   if (statefulTotalCount === 0 && EmptyPlaceholder) {
     return <EmptyPlaceholder {...contextPropIfNotDomElement(EmptyPlaceholder, context)} />
@@ -274,11 +272,11 @@ const WindowViewport: React.FC<React.PropsWithChildren> = ({ children }) => {
   const ctx = React.useContext(VirtuosoMockContext)
   const windowViewportRect = usePublisher('windowViewportRect')
   const fixedItemHeight = usePublisher('fixedItemHeight')
-  const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
+  const customScrollParent = useEmitterValue('customScrollParent')
   const viewportRef = useWindowViewportRectRef(
     windowViewportRect,
     customScrollParent,
-    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
+    useEmitterValue('skipAnimationFrameInResizeObserver')
   )
 
   React.useEffect(() => {
@@ -296,22 +294,22 @@ const WindowViewport: React.FC<React.PropsWithChildren> = ({ children }) => {
 }
 
 const TableRoot: React.FC<TableRootProps> = /*#__PURE__*/ React.memo(function TableVirtuosoRoot(props) {
-  const useWindowScroll = useEmitterValue('useWindowScroll') as boolean
-  const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
+  const useWindowScroll = useEmitterValue('useWindowScroll')
+  const customScrollParent = useEmitterValue('customScrollParent')
   const fixedHeaderHeight = usePublisher('fixedHeaderHeight')
   const fixedFooterHeight = usePublisher('fixedFooterHeight')
-  const fixedHeaderContent = useEmitterValue('fixedHeaderContent') as FixedHeaderContent
-  const fixedFooterContent = useEmitterValue('fixedFooterContent') as FixedFooterContent
-  const context = useEmitterValue('context') as any
+  const fixedHeaderContent = useEmitterValue('fixedHeaderContent')
+  const fixedFooterContent = useEmitterValue('fixedFooterContent')
+  const context = useEmitterValue('context')
   const theadRef = useSize(
     React.useMemo(() => u.compose(fixedHeaderHeight, (el) => correctItemSize(el, 'height')), [fixedHeaderHeight]),
     true,
-    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
+    useEmitterValue('skipAnimationFrameInResizeObserver')
   )
   const tfootRef = useSize(
     React.useMemo(() => u.compose(fixedFooterHeight, (el) => correctItemSize(el, 'height')), [fixedFooterHeight]),
     true,
-    useEmitterValue('skipAnimationFrameInResizeObserver') as boolean
+    useEmitterValue('skipAnimationFrameInResizeObserver')
   )
   const TheScroller = customScrollParent || useWindowScroll ? WindowScroller : Scroller
   const TheViewport = customScrollParent || useWindowScroll ? WindowViewport : Viewport

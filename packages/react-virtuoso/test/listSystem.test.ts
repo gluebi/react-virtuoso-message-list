@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AANode, walk } from '../src/AATree'
@@ -33,7 +32,7 @@ describe('list engine', () => {
 
       publish(viewportHeight, 200)
       // 7 items should be rendered
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(7)
+      expect(getValue(listState).items).toHaveLength(7)
     })
 
     it('returns the full set if a an initialItemCount is set', () => {
@@ -41,7 +40,7 @@ describe('list engine', () => {
 
       publish(initialItemCount, 10)
       publish(propsReady, true)
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(10)
+      expect(getValue(listState).items).toHaveLength(10)
     })
 
     it('returns the full set if a fixed item height is set', () => {
@@ -53,7 +52,7 @@ describe('list engine', () => {
       publish(propsReady, true)
 
       publish(viewportHeight, 200)
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(7)
+      expect(getValue(listState).items).toHaveLength(7)
     })
 
     it('updates the rows when new sizes are reported', () => {
@@ -74,7 +73,7 @@ describe('list engine', () => {
       publish(sizeRanges, [{ endIndex: 0, size: 30, startIndex: 0 }])
 
       // 7 items should be rendered
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(7)
+      expect(getValue(listState).items).toHaveLength(7)
 
       expect(getValue(listState)).toMatchObject({
         offsetBottom: 29790,
@@ -107,7 +106,7 @@ describe('list engine', () => {
 
       publish(sizeRanges, [{ endIndex: INITIAL_INDEX, size: SIZE, startIndex: INITIAL_INDEX }])
 
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(0)
+      expect(getValue(listState).items).toHaveLength(0)
 
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -118,7 +117,7 @@ describe('list engine', () => {
 
           // the UI responds by publishing back through the scrollTop stream
           publish(scrollTop, INITIAL_INDEX * SIZE)
-          expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(7)
+          expect(getValue(listState).items).toHaveLength(7)
           resolve(true)
         }, 100)
       })
@@ -143,7 +142,7 @@ describe('list engine', () => {
       const sub = vi.fn()
       subscribe(scrollTo, sub)
 
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(0)
+      expect(getValue(listState).items).toHaveLength(0)
 
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -154,7 +153,7 @@ describe('list engine', () => {
 
           // the UI responds by publishing back through the scrollTop stream
           publish(scrollTop, INITIAL_INDEX * SIZE)
-          expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(7)
+          expect(getValue(listState).items).toHaveLength(7)
           resolve(true)
         }, 100)
       })
@@ -284,7 +283,7 @@ describe('list engine', () => {
 
       publish(sizeRanges, [{ endIndex: INITIAL_INDEX, size: SIZE, startIndex: INITIAL_INDEX }])
 
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(0)
+      expect(getValue(listState).items).toHaveLength(0)
 
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -339,7 +338,7 @@ describe('list engine', () => {
       publish(sizeRanges, [{ endIndex: 0, size: 30, startIndex: 0 }])
 
       // 4 items should be rendered
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(4)
+      expect(getValue(listState).items).toHaveLength(4)
       expect(getValue(listState)).toMatchObject({
         topItems: [
           { index: 0, offset: 0, size: 30 },
@@ -484,7 +483,7 @@ describe('list engine', () => {
       publish(propsReady, true)
 
       // 7 items should be rendered
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(5)
+      expect(getValue(listState).items).toHaveLength(5)
     })
   })
 
@@ -514,7 +513,7 @@ describe('list engine', () => {
 
       expect(sub).toHaveBeenCalledWith(50 + 40 + 1000 * 30)
       // 7 items should be rendered
-      expect((getValue(listState) as import('../src/listStateSystem').ListState).items).toHaveLength(5)
+      expect(getValue(listState).items).toHaveLength(5)
     })
   })
 
@@ -557,7 +556,7 @@ describe('list engine', () => {
       publish(totalCount, 95)
       publish(firstItemIndex, 4005)
 
-      expect(toKV((getValue(sizes) as import('../src/sizeSystem').SizeState).sizeTree)).toEqual([
+      expect(toKV(getValue(sizes).sizeTree)).toEqual([
         [0, 30],
         [94, 20],
       ])
@@ -579,7 +578,7 @@ describe('list engine', () => {
       publish(groupCounts, [3, 5, 3])
       publish(firstItemIndex, 4000 - 5)
 
-      expect(toKV((getValue(sizes) as import('../src/sizeSystem').SizeState).sizeTree)).toEqual([
+      expect(toKV(getValue(sizes).sizeTree)).toEqual([
         [0, 30],
         [1, 20],
         [4, 30],
@@ -602,12 +601,12 @@ describe('list engine', () => {
 
       publish(sizeRanges, [{ endIndex: 7, size: 25, startIndex: 7 }])
 
-      let theSizeTree = toKV((getValue(sizes) as import('../src/sizeSystem').SizeState).sizeTree)
+      let theSizeTree = toKV(getValue(sizes).sizeTree)
 
       publish(groupCounts, [1, 3, 3])
       publish(firstItemIndex, 4000 + 5)
 
-      theSizeTree = toKV((getValue(sizes) as import('../src/sizeSystem').SizeState).sizeTree)
+      theSizeTree = toKV(getValue(sizes).sizeTree)
 
       expect(theSizeTree).toEqual([
         [0, 30],
@@ -628,12 +627,12 @@ describe('list engine', () => {
         { endIndex: 1, size: 20, startIndex: 1 },
       ])
 
-      let theSizeTree = toKV((getValue(sizes) as import('../src/sizeSystem').SizeState).sizeTree)
+      let theSizeTree = toKV(getValue(sizes).sizeTree)
 
       publish(groupCounts, [1, 3, 3])
       publish(firstItemIndex, 4000 + 5)
 
-      theSizeTree = toKV((getValue(sizes) as import('../src/sizeSystem').SizeState).sizeTree)
+      theSizeTree = toKV(getValue(sizes).sizeTree)
 
       expect(theSizeTree).toEqual([
         [0, 30],
@@ -657,7 +656,7 @@ describe('list engine', () => {
       publish(propsReady, true)
       publish(viewportHeight, 200)
 
-      const state = getValue(listState) as import('../src/listStateSystem').ListState
+      const state = getValue(listState)
       // 200px viewport / 50px items = 4 visible + 3 overscan = 7 items
       // But we start at index 0, so we can only append after
       expect(state.items.length).toBeGreaterThanOrEqual(7)
@@ -676,7 +675,7 @@ describe('list engine', () => {
       // Scroll to show items starting around index 20
       publish(scrollTop, 1000)
 
-      const state = getValue(listState) as import('../src/listStateSystem').ListState
+      const state = getValue(listState)
       // First item should be 3 items before the visible range
       // Visible range starts at 1000/50 = 20, so first item should be 17
       expect(state.items[0].index).toBeLessThanOrEqual(17)
@@ -693,7 +692,7 @@ describe('list engine', () => {
       // Scroll to middle of list
       publish(scrollTop, 1000)
 
-      const state = getValue(listState) as import('../src/listStateSystem').ListState
+      const state = getValue(listState)
       const visibleStartIndex = 20 // 1000/50
       const visibleEndIndex = 23 // (1000+200)/50 - 1
 
@@ -715,7 +714,7 @@ describe('list engine', () => {
       publish(propsReady, true)
       publish(viewportHeight, 200)
 
-      const state = getValue(listState) as import('../src/listStateSystem').ListState
+      const state = getValue(listState)
       // Even with 10 overscan, first item should be 0 when at top
       expect(state.items[0].index).toBe(0)
     })
@@ -731,7 +730,7 @@ describe('list engine', () => {
       // Scroll to near end
       publish(scrollTop, 300)
 
-      const state = getValue(listState) as import('../src/listStateSystem').ListState as import('../src/listStateSystem').ListState
+      const state = getValue(listState)
       // Last item should not exceed totalCount - 1
       expect(state.items[state.items.length - 1].index).toBeLessThanOrEqual(9)
     })
@@ -745,12 +744,12 @@ describe('list engine', () => {
       publish(propsReady, true)
       publish(viewportHeight, 200)
 
-      const initialState = getValue(listState) as import('../src/listStateSystem').ListState
+      const initialState = getValue(listState)
       const initialCount = initialState.items.length
 
       publish(minOverscanItemCount, 5)
 
-      const newState = getValue(listState) as import('../src/listStateSystem').ListState
+      const newState = getValue(listState)
       // Should have more items after setting overscan
       expect(newState.items.length).toBeGreaterThan(initialCount)
     })

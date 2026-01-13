@@ -48,19 +48,13 @@ export function Example() {
     <div>
       <div style={{ marginBottom: '1rem' }}>
         <button onClick={prependItems}>Prepend 5 Items</button>
-        <p style={{ fontSize: '0.875rem', color: '#666' }}>
-          Click the button to prepend items. The scroll position should be preserved.
-        </p>
+        <p style={{ fontSize: '0.875rem', color: '#666' }}>Click the button to prepend items. The scroll position should be preserved.</p>
       </div>
       <Virtuoso
         style={{ height: 400 }}
         dataWithScrollModifier={dataWithScrollModifier}
         itemIdentity={(item) => item.id}
-        itemContent={(_, item) => (
-          <div style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
-            {item.text}
-          </div>
-        )}
+        itemContent={(_, item) => <div style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>{item.text}</div>}
       />
     </div>
   )

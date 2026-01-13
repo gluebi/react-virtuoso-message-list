@@ -14,7 +14,7 @@ export function Example() {
     Array.from({ length: 50 }, (_, i) => ({
       id: i + 1,
       name: `Item ${i + 1}`,
-      status: i % 2 === 0 ? 'active' : 'inactive' as const,
+      status: i % 2 === 0 ? 'active' : ('inactive' as const),
     }))
   )
 
@@ -37,7 +37,7 @@ export function Example() {
       Array.from({ length: 50 }, (_, i) => ({
         id: i + 1,
         name: `Item ${i + 1}`,
-        status: i % 2 === 0 ? 'active' : 'inactive' as const,
+        status: i % 2 === 0 ? 'active' : ('inactive' as const),
       }))
     )
     setUseScrollModifier(true)
@@ -67,7 +67,7 @@ export function Example() {
           Reset
         </button>
         <p style={{ fontSize: '0.875rem', color: '#666' }}>
-          Filter items and observe scroll position behavior. If you're at the bottom, it should stay at the bottom.
+          Filter items and observe scroll position behavior. If you&apos;re at the bottom, it should stay at the bottom.
         </p>
       </div>
       <Virtuoso

@@ -43,7 +43,7 @@ describe('event handler', () => {
     const handle1 = vi.fn()
     subscribe(handler, handle1)
     publish(str, 10)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     subscribe(handler, undefined as unknown as any)
     publish(str, 20)
     expect(handle1).toHaveBeenCalledTimes(1)

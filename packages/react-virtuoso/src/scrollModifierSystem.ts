@@ -141,12 +141,9 @@ export const scrollModifierSystem = u.system(
     )
 
     // Store prepend items for later calculation
-    u.subscribe(
-      prependSignal,
-      (items) => {
-        u.publish(prependItemsRef, items)
-      }
-    )
+    u.subscribe(prependSignal, (items) => {
+      u.publish(prependItemsRef, items)
+    })
 
     // Calculate actual height using offsetOf and adjust scroll
     // Wait for sizes to stabilize after prepend (skip first emission, then check prependItemsRef)
@@ -174,7 +171,7 @@ export const scrollModifierSystem = u.system(
         u.publish(prependItemsRef, null)
       }
     )
-    
+
     // Also subscribe to sizes changes after prepend to catch delayed size updates
     // This ensures we calculate even if sizes emits after prependItemsRef is set
     u.subscribe(
@@ -389,205 +386,183 @@ export const scrollModifierSystem = u.system(
     // This ensures data is published immediately, even before withLatestFrom emits
     // CRITICAL: This subscription MUST run to ensure initial data is published when component mounts
     // Without this, items won't render initially when dataWithScrollModifier is provided with no modifier
-    u.subscribe(
-      dataWithScrollModifier,
-      (dataWithModifier) => {
-        // Skip if null/undefined
-        if (dataWithModifier === undefined || dataWithModifier === null) {
-          return
-        }
-
-        // Handle empty data
-        if (!dataWithModifier.data || dataWithModifier.data.length === 0) {
-          u.publish(data, [])
-          return
-        }
-
-        const scrollModifier: ScrollModifier | undefined = dataWithModifier.scrollModifier
-        const hasScrollModifierProp = 'scrollModifier' in dataWithModifier
-        const shouldPublish = scrollModifier === null || scrollModifier === undefined || !hasScrollModifierProp
-        
-        // CRITICAL: If no modifier (null, undefined, or not present), ALWAYS publish data immediately
-        // This handles the initial case where dataWithScrollModifier is set with { data: items } and no modifier
-        // This must happen synchronously to ensure data is available for rendering
-        // Check for both explicit null/undefined and missing property
-        if (shouldPublish) {
-          u.publish(data, dataWithModifier.data)
-        }
-        // If there's a modifier, let the main handler below process it
+    u.subscribe(dataWithScrollModifier, (dataWithModifier) => {
+      // Skip if null/undefined
+      if (dataWithModifier === undefined || dataWithModifier === null) {
+        return
       }
-    )
-    
+
+      // Handle empty data
+      if (!dataWithModifier.data || dataWithModifier.data.length === 0) {
+        u.publish(data, [])
+        return
+      }
+
+      const scrollModifier: ScrollModifier | undefined = dataWithModifier.scrollModifier
+      const hasScrollModifierProp = 'scrollModifier' in dataWithModifier
+      const shouldPublish = scrollModifier === null || scrollModifier === undefined || !hasScrollModifierProp
+
+      // CRITICAL: If no modifier (null, undefined, or not present), ALWAYS publish data immediately
+      // This handles the initial case where dataWithScrollModifier is set with { data: items } and no modifier
+      // This must happen synchronously to ensure data is available for rendering
+      // Check for both explicit null/undefined and missing property
+      if (shouldPublish) {
+        u.publish(data, dataWithModifier.data)
+      }
+      // If there's a modifier, let the main handler below process it
+    })
+
     // Also check the current value when subscription is set up (handles case where value is already set)
     // This is critical for initial render - if dataWithScrollModifier is set before subscription runs
     try {
       const currentValue = u.getValue(dataWithScrollModifier)
-      if (currentValue && currentValue.data) {
-        const hasModifier = 'scrollModifier' in currentValue && currentValue.scrollModifier !== null && currentValue.scrollModifier !== undefined
+      if (currentValue?.data) {
+        const hasModifier =
+          'scrollModifier' in currentValue && currentValue.scrollModifier !== null && currentValue.scrollModifier !== undefined
         if (!hasModifier) {
           u.publish(data, currentValue.data)
         }
       }
-    } catch (error) {
+    } catch {
       // If getValue fails (stream not initialized), that's ok - subscription will handle it
     }
 
     // Main handler that processes DataWithScrollModifier and routes to appropriate signals
     // Mirrors message-list implementation (lines 1471-1551)
-    u.subscribe(
-      u.pipe(
-        dataWithScrollModifier,
-        u.withLatestFrom(data, itemIdentity)
-      ),
-      ([dataWithModifier, currentData, identityFn]) => {
-        if (dataWithModifier === undefined || dataWithModifier === null) {
+    u.subscribe(u.pipe(dataWithScrollModifier, u.withLatestFrom(data, itemIdentity)), ([dataWithModifier, currentData, identityFn]) => {
+      if (dataWithModifier === undefined || dataWithModifier === null) {
+        return
+      }
+
+      if (!dataWithModifier.data || dataWithModifier.data.length === 0) {
+        u.publish(data, [])
+        return
+      }
+
+      const newData = dataWithModifier.data
+      const scrollModifier: ScrollModifier | undefined = dataWithModifier.scrollModifier
+
+      // Handle prepend modifier
+      if (scrollModifier === ScrollModifierOption.prepend) {
+        if (currentData === null || currentData === undefined || currentData.length === 0) {
+          u.publish(data, newData)
           return
         }
 
-        if (!dataWithModifier.data || dataWithModifier.data.length === 0) {
+        // Find first old item in new data using itemIdentity
+        const firstOldItem = currentData[0]
+        const matchIndex = newData.findIndex((item) => identityFn(item) === identityFn(firstOldItem))
+
+        if (matchIndex === -1) {
+          // First old item not found, treat entire new data as prepended
           u.publish(data, [])
+          u.publish(prependSignal, newData)
+        } else {
+          // Split data: prepended part and remaining part
+          const prependedPart = newData.slice(0, matchIndex)
+          const remainingPart = newData.slice(matchIndex)
+
+          u.publish(data, remainingPart)
+          u.publish(prependSignal, prependedPart)
+        }
+        return
+      }
+
+      // Handle remove-from-start modifier
+      if (scrollModifier === ScrollModifierOption.removeFromStart) {
+        if (currentData === null || currentData === undefined || currentData.length === 0) {
+          u.publish(data, newData)
           return
         }
 
-        const newData = dataWithModifier.data
-        const scrollModifier: ScrollModifier | undefined = dataWithModifier.scrollModifier
+        // Find first new item in old data using itemIdentity
+        const firstNewItem = newData[0]
+        const matchIndex = currentData.findIndex((item) => identityFn(item) === identityFn(firstNewItem))
 
-        // Handle prepend modifier
-        if (scrollModifier === ScrollModifierOption.prepend) {
-          if (currentData === null || currentData === undefined || currentData.length === 0) {
-            u.publish(data, newData)
-            return
-          }
-
-          // Find first old item in new data using itemIdentity
-          const firstOldItem = currentData[0]
-          const matchIndex = newData.findIndex((item) => identityFn(item) === identityFn(firstOldItem))
-
-          if (matchIndex === -1) {
-            // First old item not found, treat entire new data as prepended
-            u.publish(data, [])
-            u.publish(prependSignal, newData)
-          } else {
-            // Split data: prepended part and remaining part
-            const prependedPart = newData.slice(0, matchIndex)
-            const remainingPart = newData.slice(matchIndex)
-            
-            u.publish(data, remainingPart)
-            u.publish(prependSignal, prependedPart)
-          }
+        if (matchIndex === -1) {
+          // First new item not found, just update data
+          u.publish(data, newData)
           return
         }
 
-        // Handle remove-from-start modifier
-        if (scrollModifier === ScrollModifierOption.removeFromStart) {
-          if (currentData === null || currentData === undefined || currentData.length === 0) {
-            u.publish(data, newData)
-            return
-          }
+        // Calculate height of removed items and scroll
+        const removedCount = matchIndex
+        const gapValue = u.getValue(gap)
+        const currentSizes = u.getValue(sizes)
+        const removedHeight = offsetOf(removedCount, currentSizes.offsetTree, gapValue)
 
-          // Find first new item in old data using itemIdentity
-          const firstNewItem = newData[0]
-          const matchIndex = currentData.findIndex((item) => identityFn(item) === identityFn(firstNewItem))
+        // Scroll by negative height
+        u.publish(scrollBy, { top: -removedHeight, behavior: 'auto' })
 
-          if (matchIndex === -1) {
-            // First new item not found, just update data
-            u.publish(data, newData)
-            return
-          }
-
-          // Calculate height of removed items and scroll
-          const removedCount = matchIndex
-          const gapValue = u.getValue(gap)
-          const currentSizes = u.getValue(sizes)
-          const removedHeight = offsetOf(removedCount, currentSizes.offsetTree, gapValue)
-
-          // Scroll by negative height
-          u.publish(scrollBy, { top: -removedHeight, behavior: 'auto' })
-
-          // Update data and size tree in microtask (mirror message-list timing)
-          queueMicrotask(() => {
-            u.publish(data, newData)
-
-            // Update size tree by shifting indices down (subtract count from all indices >= removedCount)
-            const currentSizesAfter = u.getValue(sizes)
-            const shiftedRanges: SizeRange[] = []
-            const sizeTreeRanges = walk(currentSizesAfter.sizeTree)
-
-            let shiftedTree = newTree<number>()
-            for (const { k: startIndex, v: size } of sizeTreeRanges) {
-              if (startIndex >= removedCount) {
-                const newIndex = Math.max(0, startIndex - removedCount)
-                shiftedTree = insert(shiftedTree, newIndex, size)
-              }
-            }
-
-            // Convert back to ranges
-            const shiftedTreeRanges = walk(shiftedTree)
-            for (let i = 0; i < shiftedTreeRanges.length; i++) {
-              const { k: startIndex, v: size } = shiftedTreeRanges[i]
-              const nextRange = shiftedTreeRanges[i + 1]
-              shiftedRanges.push({
-                startIndex,
-                endIndex: nextRange ? nextRange.k - 1 : Infinity,
-                size,
-              })
-            }
-
-            u.publish(sizeRanges, shiftedRanges)
-          })
-
-          return
-        }
-
-        // Handle remove-from-end modifier
-        if (scrollModifier === ScrollModifierOption.removeFromEnd) {
+        // Update data and size tree in microtask (mirror message-list timing)
+        queueMicrotask(() => {
           u.publish(data, newData)
 
-          // Update size ranges to mark removed items as default size
-          const defaultSize = u.getValue(defaultItemSize) ?? 0
-          if (defaultSize > 0 && newData.length > 0) {
-            u.publish(sizeRanges, [
-              {
-                size: defaultSize,
-                startIndex: newData.length,
-                endIndex: Infinity,
-              },
-            ])
+          // Update size tree by shifting indices down (subtract count from all indices >= removedCount)
+          const currentSizesAfter = u.getValue(sizes)
+          const shiftedRanges: SizeRange[] = []
+          const sizeTreeRanges = walk(currentSizesAfter.sizeTree)
+
+          let shiftedTree = newTree<number>()
+          for (const { k: startIndex, v: size } of sizeTreeRanges) {
+            if (startIndex >= removedCount) {
+              const newIndex = Math.max(0, startIndex - removedCount)
+              shiftedTree = insert(shiftedTree, newIndex, size)
+            }
           }
 
-          return
-        }
-
-        // Handle item-location modifier
-        if (scrollModifier && typeof scrollModifier === 'object' && scrollModifier.type === 'item-location') {
-          const { location, purgeItemSizes } = scrollModifier
-
-          // If purgeItemSizes or empty data, reset size tree and set data
-          if (purgeItemSizes || currentData === null || currentData === undefined || currentData.length === 0) {
-            if (purgeItemSizes) {
-              // Reset size tree by publishing empty ranges
-              u.publish(sizeRanges, [])
-            }
-
-            // Set data and scroll to location
-            u.publish(data, newData)
-
-            // Scroll to location after render
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                const normalizedLocation: FlatIndexLocationWithAlign = typeof location === 'number' ? { index: location } : location
-                u.publish(scrollToIndex, normalizedLocation)
-              })
+          // Convert back to ranges
+          const shiftedTreeRanges = walk(shiftedTree)
+          for (let i = 0; i < shiftedTreeRanges.length; i++) {
+            const { k: startIndex, v: size } = shiftedTreeRanges[i]
+            const nextRange = shiftedTreeRanges[i + 1]
+            shiftedRanges.push({
+              startIndex,
+              endIndex: nextRange ? nextRange.k - 1 : Infinity,
+              size,
             })
-
-            return
           }
 
-          // Otherwise, store data temporarily and wait for render
-          // For now, we'll set data and scroll immediately
-          // In a full implementation, we'd store data temporarily and wait for listRefresh
+          u.publish(sizeRanges, shiftedRanges)
+        })
+
+        return
+      }
+
+      // Handle remove-from-end modifier
+      if (scrollModifier === ScrollModifierOption.removeFromEnd) {
+        u.publish(data, newData)
+
+        // Update size ranges to mark removed items as default size
+        const defaultSize = u.getValue(defaultItemSize) ?? 0
+        if (defaultSize > 0 && newData.length > 0) {
+          u.publish(sizeRanges, [
+            {
+              size: defaultSize,
+              startIndex: newData.length,
+              endIndex: Infinity,
+            },
+          ])
+        }
+
+        return
+      }
+
+      // Handle item-location modifier
+      if (scrollModifier && typeof scrollModifier === 'object' && scrollModifier.type === 'item-location') {
+        const { location, purgeItemSizes } = scrollModifier
+
+        // If purgeItemSizes or empty data, reset size tree and set data
+        if (purgeItemSizes || currentData === null || currentData === undefined || currentData.length === 0) {
+          if (purgeItemSizes) {
+            // Reset size tree by publishing empty ranges
+            u.publish(sizeRanges, [])
+          }
+
+          // Set data and scroll to location
           u.publish(data, newData)
 
+          // Scroll to location after render
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               const normalizedLocation: FlatIndexLocationWithAlign = typeof location === 'number' ? { index: location } : location
@@ -598,36 +573,50 @@ export const scrollModifierSystem = u.system(
           return
         }
 
-        // Handle auto-scroll-to-bottom modifier
-        if (scrollModifier && typeof scrollModifier === 'object' && scrollModifier.type === 'auto-scroll-to-bottom') {
-          u.publish(data, newData)
-          u.publish(autoScrollToBottomSignal, {
-            data: newData,
-            autoScroll: scrollModifier.autoScroll,
-          })
-          return
-        }
-
-        // Handle items-change modifier
-        if (scrollModifier && typeof scrollModifier === 'object' && scrollModifier.type === 'items-change') {
-          // Publish data immediately (subscriptions are async, so this ensures data is available)
-          u.publish(data, newData)
-          // Also publish to signal for scroll behavior handling
-          u.publish(itemsChangeSignal, {
-            newData,
-            autoscrollToBottomBehavior: scrollModifier.behavior,
-          })
-          return
-        }
-
-        // No modifier or null/undefined - ALWAYS publish data
-        // This mirrors message-list line 1550: e.pub(k, l)
-        // This is the fallback that ensures data is always published when there's no modifier
-        // The initial subscription above handles the case before withLatestFrom emits,
-        // but this ensures data is published even after withLatestFrom has emitted
+        // Otherwise, store data temporarily and wait for render
+        // For now, we'll set data and scroll immediately
+        // In a full implementation, we'd store data temporarily and wait for listRefresh
         u.publish(data, newData)
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const normalizedLocation: FlatIndexLocationWithAlign = typeof location === 'number' ? { index: location } : location
+            u.publish(scrollToIndex, normalizedLocation)
+          })
+        })
+
+        return
       }
-    )
+
+      // Handle auto-scroll-to-bottom modifier
+      if (scrollModifier && typeof scrollModifier === 'object' && scrollModifier.type === 'auto-scroll-to-bottom') {
+        u.publish(data, newData)
+        u.publish(autoScrollToBottomSignal, {
+          data: newData,
+          autoScroll: scrollModifier.autoScroll,
+        })
+        return
+      }
+
+      // Handle items-change modifier
+      if (scrollModifier && typeof scrollModifier === 'object' && scrollModifier.type === 'items-change') {
+        // Publish data immediately (subscriptions are async, so this ensures data is available)
+        u.publish(data, newData)
+        // Also publish to signal for scroll behavior handling
+        u.publish(itemsChangeSignal, {
+          newData,
+          autoscrollToBottomBehavior: scrollModifier.behavior,
+        })
+        return
+      }
+
+      // No modifier or null/undefined - ALWAYS publish data
+      // This mirrors message-list line 1550: e.pub(k, l)
+      // This is the fallback that ensures data is always published when there's no modifier
+      // The initial subscription above handles the case before withLatestFrom emits,
+      // but this ensures data is published even after withLatestFrom has emitted
+      u.publish(data, newData)
+    })
 
     return {
       dataWithScrollModifier,

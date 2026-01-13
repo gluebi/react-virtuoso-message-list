@@ -47,6 +47,12 @@ const config = tseslint.config(
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/no-deprecated': 'off',
       '@typescript-eslint/non-nullable-type-assertion-style': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/restrict-plus-operands': 'warn',
 
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -67,12 +73,15 @@ const config = tseslint.config(
     },
   },
   {
-    files: ['e2e/**/*.{js,mjs,cjs,ts,jsx,tsx}', 'examples/**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+    files: ['e2e/**/*.{js,mjs,cjs,ts,jsx,tsx}', 'examples/**/*.{js,mjs,cjs,ts,jsx,tsx}', 'test/**/*.{js,mjs,cjs,ts,jsx,tsx}'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/restrict-plus-operands': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
       'no-console': 'off',
       'no-debugger': 'off',
     },

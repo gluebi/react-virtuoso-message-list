@@ -73,9 +73,7 @@ export function Example() {
         itemContent={(_, message) => (
           <div style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
             <div style={{ fontWeight: 'bold' }}>{message.text}</div>
-            <div style={{ fontSize: '0.75rem', color: '#666' }}>
-              {message.timestamp.toLocaleTimeString()}
-            </div>
+            <div style={{ fontSize: '0.75rem', color: '#666' }}>{message.timestamp.toLocaleTimeString()}</div>
           </div>
         )}
       />

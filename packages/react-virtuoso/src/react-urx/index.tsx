@@ -291,16 +291,14 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
         if (source && typeof source === 'function') {
           return u.subscribe(source, c)
         }
-        return () => {}
+        return () => {
+          // No-op unsubscribe function
+        }
       },
       [source]
     )
 
-    return React.useSyncExternalStore(
-      cb,
-      getValueSafe,
-      getValueSafe
-    )
+    return React.useSyncExternalStore(cb, getValueSafe, getValueSafe)
   }
 
   const useEmitterValueLegacy = <K extends keyof S, V = S[K] extends StatefulStream<infer R> ? R : never>(key: K) => {
@@ -330,7 +328,9 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
           }
         })
       }
-      return () => {}
+      return () => {
+        // No-op unsubscribe function
+      }
     }, [source, value])
 
     return value
@@ -345,7 +345,9 @@ export function systemToComponent<SS extends AnySystemSpec, M extends SystemProp
       if (source && typeof source === 'function') {
         return u.subscribe(source, callback)
       }
-      return () => {}
+      return () => {
+        // No-op unsubscribe function
+      }
     }, [callback, source])
   }
 

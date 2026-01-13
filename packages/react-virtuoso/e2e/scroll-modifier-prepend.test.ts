@@ -32,13 +32,13 @@ test.describe('scroll modifier prepend', () => {
   test('preserves scroll position when prepending items', async ({ page }) => {
     // Wait for items to render
     await page.waitForTimeout(300)
-    
+
     // Get initial scroll height to check if list is scrollable
     const scroller = page.locator('[data-testid=virtuoso-scroller]')
     const scrollHeight = await scroller.evaluate((el) => el.scrollHeight)
     const clientHeight = await scroller.evaluate((el) => el.clientHeight)
     const isScrollable = scrollHeight > clientHeight
-    
+
     if (isScrollable) {
       // Scroll to middle of list
       await scrollToMiddle(page)
@@ -65,7 +65,7 @@ test.describe('scroll modifier prepend', () => {
   test('prepends items correctly', async ({ page }) => {
     // Wait for items to render
     await page.waitForTimeout(400)
-    
+
     // Get initial item count using the item list
     const initialItemCount = await page.evaluate(() => {
       const listContainer = document.querySelector('[data-testid=virtuoso-item-list]')
@@ -84,7 +84,7 @@ test.describe('scroll modifier prepend', () => {
       const listContainer = document.querySelector('[data-testid=virtuoso-item-list]')
       return listContainer ? listContainer.childElementCount : 0
     })
-    
+
     // Should have more items (prepended items should be added)
     expect(itemsAfter).toBeGreaterThanOrEqual(initialItemCount)
   })
