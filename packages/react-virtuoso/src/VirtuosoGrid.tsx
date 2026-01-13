@@ -151,7 +151,7 @@ const GridItems: React.FC = /*#__PURE__*/ React.memo(function GridItems() {
 const Header: React.FC = React.memo(function VirtuosoHeader() {
   const Header = useEmitterValue('HeaderComponent')
   const headerHeight = usePublisher('headerHeight')
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const HeaderFooterTag = useEmitterValue('headerFooterTag') as any
   const ref = useSize(
     React.useMemo(
@@ -174,7 +174,7 @@ const Header: React.FC = React.memo(function VirtuosoHeader() {
 const Footer: React.FC = React.memo(function VirtuosoGridFooter() {
   const Footer = useEmitterValue('FooterComponent')
   const footerHeight = usePublisher('footerHeight')
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const HeaderFooterTag = useEmitterValue('headerFooterTag') as any
   const ref = useSize(
     React.useMemo(

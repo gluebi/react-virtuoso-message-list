@@ -116,8 +116,9 @@ const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = fa
   const itemContent = useEmitterValue('itemContent') as ItemContent<any, any>
   const groupContent = useEmitterValue('groupContent') as GroupContent<unknown>
 
-  const ScrollSeekPlaceholder = (useEmitterValue('ScrollSeekPlaceholder') ||
-    DefaultScrollSeekPlaceholder) as React.ComponentType<{ height: number; index: number; type?: 'group' | 'item'; groupIndex?: number } & { context?: unknown }>
+  const ScrollSeekPlaceholder = (useEmitterValue('ScrollSeekPlaceholder') || DefaultScrollSeekPlaceholder) as React.ComponentType<
+    { height: number; index: number; type?: 'group' | 'item'; groupIndex?: number } & { context?: unknown }
+  >
   const GroupComponent = useEmitterValue('GroupComponent') as React.ComponentType<any>
   const TableRowComponent = useEmitterValue('TableRowComponent') as React.ComponentType<any>
 
@@ -316,11 +317,11 @@ const TableRoot: React.FC<TableRootProps> = /*#__PURE__*/ React.memo(function Ta
   )
   const TheScroller = customScrollParent || useWindowScroll ? WindowScroller : Scroller
   const TheViewport = customScrollParent || useWindowScroll ? WindowViewport : Viewport
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const TheTable = useEmitterValue('TableComponent') as any
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const TheTHead = useEmitterValue('TableHeadComponent') as any
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const TheTFoot = useEmitterValue('TableFooterComponent') as any
 
   const theHead = fixedHeaderContent ? (

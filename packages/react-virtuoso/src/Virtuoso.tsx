@@ -111,8 +111,9 @@ const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = fa
   })
 
   const EmptyPlaceholder = useEmitterValue('EmptyPlaceholder') as React.ComponentType<any> | undefined
-  const ScrollSeekPlaceholder = (useEmitterValue('ScrollSeekPlaceholder') ||
-    DefaultScrollSeekPlaceholder) as React.ComponentType<{ height: number; index: number; type?: 'group' | 'item'; groupIndex?: number } & { context?: unknown }>
+  const ScrollSeekPlaceholder = (useEmitterValue('ScrollSeekPlaceholder') || DefaultScrollSeekPlaceholder) as React.ComponentType<
+    { height: number; index: number; type?: 'group' | 'item'; groupIndex?: number } & { context?: unknown }
+  >
   const ListComponent = useEmitterValue('ListComponent') as React.ComponentType<any>
   const ItemComponent = useEmitterValue('ItemComponent') as React.ComponentType<any>
   const GroupComponent = useEmitterValue('GroupComponent') as React.ComponentType<any>
@@ -196,9 +197,9 @@ const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = fa
               key={key}
               style={horizontalDirection ? HORIZONTAL_ITEM_STYLE : ITEM_STYLE}
             >
-        {hasGroups
-          ? (itemContent as GroupItemContent<any, any>)(item.index, item.groupIndex ?? 0, item.data, context)
-          : (itemContent as ItemContent<any, any>)(item.index, item.data, context)}
+              {hasGroups
+                ? (itemContent as GroupItemContent<any, any>)(item.index, item.groupIndex ?? 0, item.data, context)
+                : (itemContent as ItemContent<any, any>)(item.index, item.data, context)}
             </ItemComponent>
           )
         }
@@ -251,7 +252,7 @@ export function itemPropIfNotDomElement(element: unknown, item: unknown) {
 const Header: React.FC = /*#__PURE__*/ React.memo(function VirtuosoHeader() {
   const Header = useEmitterValue('HeaderComponent') as React.ComponentType<any> | undefined
   const headerHeight = usePublisher('headerHeight')
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const HeaderFooterTag = useEmitterValue('HeaderFooterTag') as any
   const ref = useSize(
     React.useMemo(
@@ -274,7 +275,7 @@ const Header: React.FC = /*#__PURE__*/ React.memo(function VirtuosoHeader() {
 const Footer: React.FC = /*#__PURE__*/ React.memo(function VirtuosoFooter() {
   const Footer = useEmitterValue('FooterComponent') as React.ComponentType<any> | undefined
   const footerHeight = usePublisher('footerHeight')
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const HeaderFooterTag = useEmitterValue('HeaderFooterTag') as any
   const ref = useSize(
     React.useMemo(
