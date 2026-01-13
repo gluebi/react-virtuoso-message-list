@@ -14,6 +14,9 @@ apps/virtuoso.dev/docs/
 .changeset/*.md
 !.changeset/README.md
 
+# Auto-generated changelogs
+**/CHANGELOG.md
+
 # Specs (internal planning docs)
 specs/
 
