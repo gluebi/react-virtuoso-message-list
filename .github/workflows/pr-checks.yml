@@ -112,7 +112,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: pnpm --filter @gluebi/react-virtuoso build
 
   e2e:
     name: E2E Tests
