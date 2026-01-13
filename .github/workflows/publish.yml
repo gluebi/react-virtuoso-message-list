@@ -50,9 +50,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: pnpm changeset version
-          publish: |
-            cd packages/react-virtuoso
-            npm publish --registry https://npm.pkg.github.com
+          publish: sh -c "cd packages/react-virtuoso && npm publish --registry https://npm.pkg.github.com"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
