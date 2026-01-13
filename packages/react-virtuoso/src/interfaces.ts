@@ -803,3 +803,180 @@ export interface WindowViewportInfo {
   /** The visible width of the window viewport in pixels */
   visibleWidth: number
 }
+
+/**
+ * Predefined scroll modifier options for common data operations.
+ *
+ * @group Scroll Modifier
+ */
+export const ScrollModifierOption = {
+  prepend: 'prepend',
+  removeFromStart: 'remove-from-start',
+  removeFromEnd: 'remove-from-end',
+} as const
+
+/**
+ * The type of the {@link ScrollModifierOption} constant.
+ *
+ * @group Scroll Modifier
+ */
+export type ScrollModifierOptionType = typeof ScrollModifierOption
+
+/**
+ * The possible values of the {@link ScrollModifierOption} constant.
+ *
+ * @group Scroll Modifier
+ */
+export type ScrollModifierOptionValue = ScrollModifierOptionType[keyof ScrollModifierOptionType]
+
+/**
+ * A location in the list to scroll to. Passing a number scrolls instantly to the item at the specified index aligned to the top.
+ * See {@link FlatIndexLocationWithAlign} for more advanced options.
+ *
+ * @group Scroll Modifier
+ */
+export type ItemLocation = number | FlatIndexLocationWithAlign
+
+/**
+ * A function that describes the easing curve for the scroll animation.
+ * See {@link https://easings.net/ | easings.net} for examples of easing functions.
+ *
+ * @group Scroll Modifier
+ */
+export type BezierFunction = (x: number) => number
+
+/**
+ * The scroll behavior to use when scrolling to a location.
+ * You can also pass a custom scroll behavior function that returns an object with the number of animation frames and the easing function based on the current scroll top and the targetTop.
+ *
+ * @group Scroll Modifier
+ */
+export type ScrollBehavior =
+  | 'smooth'
+  | 'auto'
+  | 'instant'
+  | ((
+      currentTop: number,
+      targetTop: number
+    ) => {
+      animationFrameCount: number
+      easing: BezierFunction
+    })
+
+/**
+ * A callback function that determines the scroll behavior when data changes.
+ * @typeParam Data - The type of the data items in the list.
+ * @typeParam Context - The type of the context passed to the list.
+ *
+ * @group Scroll Modifier
+ */
+export type ItemLocationCallback<Data = unknown, Context = unknown> = (
+  params: ItemLocationCallbackParams<Data, Context>
+) => ScrollBehavior | boolean | ItemLocation
+
+/**
+ * The parameters passed to the {@link ItemLocationCallback} function.
+ * @typeParam Data - The type of the data items in the list.
+ * @typeParam Context - The type of the context passed to the list.
+ *
+ * @group Scroll Modifier
+ */
+export interface ItemLocationCallbackParams<Data = unknown, Context = unknown> {
+  /**
+   * The location of the list before the data change. See {@link ListScrollLocation} for the details of the parameter received.
+   */
+  scrollLocation: ListScrollLocation
+  /**
+   * Indicates whether the list is currently scrolling. If you receive fast updates and use `'smooth'` scrolling, there's a chance that the list will be in the middle of a scroll when new data arrives.
+   */
+  scrollInProgress: boolean
+  /**
+   * Whether the list is at the bottom before the data change.
+   */
+  atBottom: boolean
+  /**
+   * The new data that will be appended to the list.
+   */
+  data: Data[]
+  /**
+   * The context passed to the list.
+   */
+  context: Context
+}
+
+/**
+ * Describes the location of the list relative to the viewport and the scroll element.
+ *
+ * @group Scroll Modifier
+ */
+export interface ListScrollLocation {
+  /**
+   * The distance between the list top edge and the viewport top edge.
+   * When the list is above the viewport (when scrolling down), this value is a negative number. When the list is scrolled to the top, this value is `0`.
+   */
+  listOffset: number
+  /**
+   * The height of the visible portion of the list without any headers and footers.
+   */
+  visibleListHeight: number
+  /**
+   * The scroll height of the scroller wrapper.
+   */
+  scrollHeight: number
+  /**
+   * The distance between the scroller element bottom edge and the viewport bottom edge.
+   * If `0`, the list is at the bottom.
+   */
+  bottomOffset: number
+  /**
+   * A convenience flag that indicates whether the list is at the bottom. The flag is also true when the list is currently scrolling to the bottom.
+   */
+  isAtBottom: boolean
+}
+
+/**
+ * Specifies the list behavior to perform when the list data changes.
+ * @typeParam Data - The type of the data items in the list.
+ * @typeParam Context - The type of the context passed to the list.
+ *
+ * @group Scroll Modifier
+ */
+export type AutoscrollToBottom<Data = unknown, Context = unknown> =
+  | ItemLocationCallback<Data, Context>
+  | NonNullable<ScrollToOptions['behavior']>
+  | boolean
+
+/**
+ * Describes the scroll modification to perform when the data of the list is updated.
+ * See [the scroll modifier](https://virtuoso.dev/virtuoso-message-list/scroll-modifier/) documentation section for examples of how to use this type.
+ *
+ * @group Scroll Modifier
+ */
+export type ScrollModifier =
+  | null
+  | undefined
+  | {
+      type: 'item-location'
+      location: ItemLocation
+      purgeItemSizes?: boolean
+    }
+  | {
+      type: 'auto-scroll-to-bottom'
+      autoScroll: AutoscrollToBottom
+    }
+  | {
+      type: 'items-change'
+      behavior: ScrollBehavior | { location: () => ItemLocation | null | undefined }
+    }
+  | ScrollModifierOptionValue
+
+/**
+ * The shape of the message list `data` prop. It includes the data to render and any extra scroll position modification that should be applied when the data changes.
+ * @typeParam Data - The type of the data items in the list.
+ *
+ * @group Scroll Modifier
+ */
+export interface DataWithScrollModifier<Data> {
+  data: Data[] | null | undefined
+  scrollModifier?: ScrollModifier
+}

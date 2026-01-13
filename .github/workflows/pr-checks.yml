@@ -134,6 +134,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build
+        run: pnpm --filter @gluebi/react-virtuoso build
+
       - name: Install Playwright browsers
         run: pnpm --filter @gluebi/react-virtuoso exec playwright install --with-deps chromium
 

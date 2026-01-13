@@ -34,7 +34,6 @@ export function Example() {
   const scrollerRef = React.useCallback(
     (element: HTMLElement | null | Window) => {
       if (element) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         element.addEventListener('keydown', keyDownCallback as any)
         listRef.current = element as HTMLElement
       } else {
