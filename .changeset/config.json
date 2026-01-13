@@ -17,6 +17,7 @@
     "@virtuoso.dev/reactive-engine-router",
     "@virtuoso.dev/reactive-engine-storage",
     "@virtuoso.dev/tooling",
-    "@virtuoso.dev/virtuoso.dev"
+    "@virtuoso.dev/virtuoso.dev",
+    "@virtuoso.dev/examples"
   ]
 }
