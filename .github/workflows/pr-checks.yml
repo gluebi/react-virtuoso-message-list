@@ -34,7 +34,7 @@ jobs:
         run: pnpm build
 
       - name: Type check
-        run: pnpm typecheck
+        run: pnpm --filter react-virtuoso --filter @virtuoso.dev/gurx --filter @virtuoso.dev/masonry typecheck
 
   lint:
     name: Lint Code
@@ -60,7 +60,7 @@ jobs:
         run: pnpm build
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm --filter react-virtuoso --filter @virtuoso.dev/gurx --filter @virtuoso.dev/masonry lint
 
   test:
     name: Test
