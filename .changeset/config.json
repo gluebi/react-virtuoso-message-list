@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": ["@virtuoso.dev/*", "@gluebi/react-virtuoso-message-list"]
 }
