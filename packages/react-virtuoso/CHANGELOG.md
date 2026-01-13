@@ -1,5 +1,11 @@
 # react-virtuoso
 
+## 4.19.0
+
+### Minor Changes
+
+- [`69134be`](https://github.com/gluebi/react-virtuoso-message-list/commit/69134bee191e35624d2275671eb8ae8fb795d76f) Thanks [@gluebi](https://github.com/gluebi)! - Adds scroll modifier from message list: https://virtuoso.dev/message-list/scroll-modifier/
+
 ## 4.18.1
 
 ### Patch Changes
