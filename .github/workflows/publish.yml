@@ -46,7 +46,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm exec changesets publish
+          publish: pnpm --filter @gluebi/react-virtuoso publish --no-git-checks --registry https://npm.pkg.github.com
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
