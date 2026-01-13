@@ -196,9 +196,9 @@ const Items = /*#__PURE__*/ React.memo(function VirtuosoItems({ showTopList = fa
               key={key}
               style={horizontalDirection ? HORIZONTAL_ITEM_STYLE : ITEM_STYLE}
             >
-              {hasGroups
-                ? (itemContent as GroupItemContent<any, any>)(item.index, item.groupIndex, item.data, context)
-                : (itemContent as ItemContent<any, any>)(item.index, item.data, context)}
+        {hasGroups
+          ? (itemContent as GroupItemContent<any, any>)(item.index, item.groupIndex ?? 0, item.data, context)
+          : (itemContent as ItemContent<any, any>)(item.index, item.data, context)}
             </ItemComponent>
           )
         }
@@ -445,9 +445,9 @@ const TopItemListContainer: React.FC<React.PropsWithChildren> = ({ children }) =
 }
 
 const ListRoot: React.FC<ListRootProps> = /*#__PURE__*/ React.memo(function VirtuosoRoot(props) {
-  const useWindowScroll = useEmitterValue('useWindowScroll')
-  const showTopList = useEmitterValue('topItemsIndexes').length > 0
-  const customScrollParent = useEmitterValue('customScrollParent')
+  const useWindowScroll = useEmitterValue('useWindowScroll') as boolean
+  const showTopList = (useEmitterValue('topItemsIndexes') as number[]).length > 0
+  const customScrollParent = useEmitterValue('customScrollParent') as HTMLElement | undefined
   const context = useEmitterValue('context')
   const TheScroller = customScrollParent || useWindowScroll ? WindowScroller : Scroller
   const TheViewport = customScrollParent || useWindowScroll ? WindowViewport : Viewport
