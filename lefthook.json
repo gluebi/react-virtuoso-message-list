@@ -10,12 +10,12 @@
       },
       "eslint": {
         "glob": "*.{js,mjs,cjs,ts,jsx,tsx}",
-        "run": "pnpm lint",
+        "run": "pnpm --filter @gluebi/react-virtuoso lint",
         "skip": ["merge", "rebase"]
       },
       "type-check": {
         "glob": "*.{ts,tsx,astro}",
-        "run": "pnpm typecheck",
+        "run": "pnpm --filter @gluebi/react-virtuoso typecheck",
         "skip": ["merge", "rebase"]
       }
     }
