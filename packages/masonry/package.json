@@ -1,6 +1,6 @@
 {
   "name": "@virtuoso.dev/masonry",
-  "private": false,
+  "private": true,
   "description": "Virtualized React component for rendering masonry layouts",
   "keywords": [
     "react",

@@ -1,6 +1,6 @@
 {
   "name": "@virtuoso.dev/gurx",
-  "private": false,
+  "private": true,
   "sideEffects": false,
   "type": "module",
   "version": "1.2.0",

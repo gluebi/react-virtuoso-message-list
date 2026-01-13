@@ -1,6 +1,6 @@
 {
   "name": "@virtuoso.dev/reactive-engine-core",
-  "private": false,
+  "private": true,
   "sideEffects": false,
   "type": "module",
   "version": "0.0.4",
